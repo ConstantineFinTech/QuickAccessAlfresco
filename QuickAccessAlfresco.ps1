@@ -1,14 +1,23 @@
-$domainName = "localhost:8080"
+$domainName = "localhost:8080" # This parameter stores the link to local host.
 $mapDomain = "localhost"
 $linkBaseDir = "$env:userprofile\Links"
 $appData = "$env:APPDATA\QuickAccessLinks"
-$prependToLinkTitle = ""
+$prependToLinkTitle = "" # Variable is assigned but doesn't do anything.
 
-function Create-AppData {
+function Create-AppData { 
+# Creates AppData forlder on users machine
+# and checks if it was created successfully.
+
     New-Item -ItemType Directory -Force -Path $appData
+
 }
 
 function CopyIcon($icon="") {
+<#
+Copies entities logo to the corner of AppData folder.
+Checks if operation was successful.
+#>
+
     $testPath = (-Not (Test-Path "$appData\$icon"))
     if ($icon -And $testPath) {
         Copy-Item $icon "$appData\"
@@ -18,6 +27,10 @@ function CopyIcon($icon="") {
 }
 
 function Build-Url([String] $urlParams="") {
+    <#
+    Creates connection between local machine and (internet server) --?
+    Checks if connection was established and returns URL.(Uniform Resource Locator).
+    #>
     $whoAmI = $env:UserName
     $url = "http://$domainName/alfresco/service/api/people/$whoAmI/sites/"
     
@@ -28,6 +41,9 @@ function Build-Url([String] $urlParams="") {
 }
 
 function Get-ListOfSites {
+
+# Retreives list of sites for currently logged in user from --fail
+
     Param([String] $url)
     $webclient = new-object System.Net.WebClient
     $webclient.UseDefaultCredentials=$true
@@ -36,6 +52,9 @@ function Get-ListOfSites {
 }
 
 function Create-HomeAndSharedLinks {
+
+# 
+
    $links = @{}
    $cacheExists = CacheExists
    if (-not $cacheExists.Name.Count) {
